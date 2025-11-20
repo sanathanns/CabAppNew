@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { theme } from "../styles/theme";
 import { useNavigate } from "react-router-native";
 
@@ -30,92 +31,131 @@ export function DriverCard({ driver, price, eta }) {
   }
 
   return (
-    <View style={styles.card}>
+    <TouchableOpacity style={styles.card} onPress={proceedToBooking} activeOpacity={0.95}>
       
       {/* DRIVER IMAGE */}
       <Image source={{ uri: d.image }} style={styles.avatar} />
 
       {/* INFO BLOCK */}
-      <View style={{ flex: 1, marginLeft: 12 }}>
-        <Text style={styles.name}>{d.name}</Text>
-        <Text style={styles.details}>
-          ⭐ {d.rating} • {arrivalTime}
-        </Text>
-
+      <View style={{ flex: 1, marginLeft: 14 }}>
+        <View style={styles.nameRow}>
+          <Text style={styles.name}>{d.name}</Text>
+          <View style={styles.ratingBadge}>
+            <Ionicons name="star" size={12} color="#FFD700" />
+            <Text style={styles.ratingText}>{d.rating}</Text>
+          </View>
+        </View>
+        
         <Text style={styles.carText}>
-          {d.carModel} ({d.carColor})
+          {d.carModel} • {d.carColor}
         </Text>
 
-        <Text style={styles.plate}>Plate: {d.plate}</Text>
+        <View style={styles.infoRow}>
+          <Ionicons name="time-outline" size={14} color={theme.colors.muted} />
+          <Text style={styles.infoText}>{arrivalTime} away</Text>
+          <View style={styles.dot} />
+          <Text style={styles.infoText}>{d.distance}</Text>
+        </View>
       </View>
 
       {/* RIGHT SIDE BLOCK */}
       <View style={styles.right}>
         <Text style={styles.price}>{ridePrice}</Text>
-
-        <TouchableOpacity style={styles.bookBtn} onPress={proceedToBooking}>
-          <Text style={styles.bookText}>Book</Text>
-        </TouchableOpacity>
+        <View style={styles.bookBtn}>
+          <Ionicons name="chevron-forward" size={16} color={theme.colors.primary} />
+        </View>
       </View>
 
-    </View>
+    </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
     backgroundColor: "#fff",
-    padding: 12,
-    borderRadius: 14,
+    padding: 20,
+    borderRadius: 20,
     flexDirection: "row",
     alignItems: "center",
-    elevation: 3,
-    width: "100%"
+    width: "100%",
+    borderWidth: 2,
+    borderColor: theme.colors.border,
+    ...theme.shadows.medium
   },
   avatar: {
     width: 70,
     height: 70,
-    borderRadius: 16
+    borderRadius: 18,
+    borderWidth: 3,
+    borderColor: theme.colors.primaryLight
+  },
+  nameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8
   },
   name: {
     fontSize: 17,
     fontWeight: "800",
-    color: theme.colors.text
+    color: theme.colors.text,
+    marginRight: 8,
+    letterSpacing: -0.3
   },
-  details: {
-    marginTop: 4,
-    color: theme.colors.muted,
+  ratingBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FEF3C7',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8
+  },
+  ratingText: {
     fontSize: 13,
-    fontWeight: "600"
+    fontWeight: '800',
+    color: '#92400E',
+    marginLeft: 4
   },
   carText: {
-    marginTop: 4,
-    color: theme.colors.text,
+    color: theme.colors.textLight,
     fontWeight: "700",
-    fontSize: 14
+    fontSize: 14,
+    marginBottom: 8
   },
-  plate: {
+  infoRow: {
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  infoText: {
     color: theme.colors.muted,
-    fontSize: 12,
-    marginTop: 2
+    fontSize: 13,
+    fontWeight: '700',
+    marginLeft: 5
+  },
+  dot: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: theme.colors.muted,
+    marginHorizontal: 8
   },
   right: {
-    alignItems: "flex-end"
+    alignItems: "flex-end",
+    justifyContent: 'center'
   },
   price: {
-    fontSize: 18,
+    fontSize: 22,
     fontWeight: "900",
-    color: theme.colors.primary
+    color: theme.colors.primary,
+    marginBottom: 10,
+    letterSpacing: -0.5
   },
   bookBtn: {
-    marginTop: 8,
     backgroundColor: theme.colors.primary,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 10
-  },
-  bookText: {
-    color: "#fff",
-    fontWeight: "800"
+    width: 36,
+    height: 36,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...theme.shadows.small
   }
 });

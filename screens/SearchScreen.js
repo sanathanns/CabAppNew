@@ -88,43 +88,68 @@ export function SearchScreen() {
 
   return (
     <SafeAreaView style={styles.safe}>
-      <Text style={styles.title}>
-        {type === "pickup" ? "Select Pickup Location" : "Select Destination"}
-      </Text>
+      <View style={styles.header}>
+        <Text style={styles.title}>
+          {type === "pickup" ? "Pickup Location" : "Drop Location"}
+        </Text>
+        <Text style={styles.subtitle}>Search for a location in India</Text>
+      </View>
 
       {/* SEARCH BAR */}
       <View style={styles.searchBar}>
-        <Ionicons name="search" size={20} color={theme.colors.muted} />
+        <Ionicons name="search" size={20} color={theme.colors.primary} />
         <TextInput
           style={styles.input}
-          placeholder="Search for a location"
+          placeholder="Search location..."
+          placeholderTextColor={theme.colors.muted}
           value={query}
           onChangeText={searchLocation}
+          autoFocus
         />
+        {query.length > 0 && (
+          <TouchableOpacity onPress={() => setQuery("")}>
+            <Ionicons name="close-circle" size={20} color={theme.colors.muted} />
+          </TouchableOpacity>
+        )}
       </View>
 
       {/* LOADING */}
       {loading && (
-        <ActivityIndicator size="large" color={theme.colors.primary} />
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={theme.colors.primary} />
+        </View>
       )}
 
       {/* RESULTS */}
       <FlatList
         data={results}
         keyExtractor={(item, index) => index.toString()}
+        showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
-          <TouchableOpacity style={styles.item} onPress={() => selectPlace(item)}>
-            <Ionicons name="location" size={20} color={theme.colors.primary} />
+          <TouchableOpacity 
+            style={styles.item} 
+            onPress={() => selectPlace(item)}
+            activeOpacity={0.8}
+          >
+            <View style={styles.iconContainer}>
+              <Ionicons name="location" size={22} color="#fff" />
+            </View>
 
             <View style={{ marginLeft: 12, flex: 1 }}>
               <Text style={styles.itemTitle}>{item.name.split(",")[0]}</Text>
-              <Text style={styles.itemSub}>{item.name}</Text>
+              <Text style={styles.itemSub} numberOfLines={2}>{item.name}</Text>
             </View>
+
+            <Ionicons name="chevron-forward" size={18} color={theme.colors.muted} />
           </TouchableOpacity>
         )}
         ListEmptyComponent={() =>
           query.length > 2 && !loading ? (
-            <Text style={styles.noResult}>No results found</Text>
+            <View style={styles.emptyContainer}>
+              <Ionicons name="search-outline" size={48} color={theme.colors.muted} />
+              <Text style={styles.noResult}>No results found</Text>
+              <Text style={styles.noResultSub}>Try a different search term</Text>
+            </View>
           ) : null
         }
       />
@@ -136,37 +161,109 @@ export function SearchScreen() {
 // STYLES
 // ------------------------------
 const styles = StyleSheet.create({
-  safe: { flex: 1, padding: 18, backgroundColor: "#fff" },
-  title: { fontSize: 20, fontWeight: "900", marginBottom: 16 },
+  safe: { 
+    flex: 1, 
+    paddingHorizontal: 24,
+    paddingTop: 24,
+    backgroundColor: '#fff'
+  },
+
+  header: {
+    marginBottom: 24
+  },
+
+  title: { 
+    fontSize: 28, 
+    fontWeight: "900", 
+    color: theme.colors.text,
+    letterSpacing: -0.5,
+    marginBottom: 8
+  },
+
+  subtitle: {
+    fontSize: 15,
+    color: theme.colors.muted,
+    fontWeight: '700'
+  },
 
   searchBar: {
     flexDirection: "row",
-    backgroundColor: "#F4F4F4",
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    borderRadius: 12,
+    backgroundColor: theme.colors.background,
+    paddingHorizontal: 18,
+    paddingVertical: 16,
+    borderRadius: 20,
     alignItems: "center",
-    marginBottom: 16,
+    marginBottom: 24,
+    borderWidth: 2,
+    borderColor: theme.colors.border
   },
 
   input: {
-    marginLeft: 10,
+    marginLeft: 14,
     flex: 1,
     fontSize: 16,
-    color: "#000",
+    color: theme.colors.text,
+    fontWeight: '700'
+  },
+
+  loadingContainer: {
+    paddingVertical: 40,
+    alignItems: 'center'
   },
 
   item: {
     flexDirection: "row",
-    padding: 14,
-    backgroundColor: "#fafafa",
-    borderRadius: 12,
-    marginBottom: 10,
+    padding: 18,
+    backgroundColor: theme.colors.background,
+    borderRadius: 18,
+    marginBottom: 12,
     alignItems: "center",
+    borderWidth: 2,
+    borderColor: theme.colors.border
   },
 
-  itemTitle: { fontWeight: "800", fontSize: 15 },
-  itemSub: { color: "#666", fontSize: 12 },
+  iconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 14,
+    backgroundColor: theme.colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
 
-  noResult: { textAlign: "center", marginTop: 20, color: "#777" },
+  itemTitle: { 
+    fontWeight: "800", 
+    fontSize: 16,
+    color: theme.colors.text,
+    marginBottom: 5,
+    letterSpacing: -0.3
+  },
+
+  itemSub: { 
+    color: theme.colors.muted, 
+    fontSize: 14,
+    fontWeight: '600'
+  },
+
+  emptyContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 80
+  },
+
+  noResult: { 
+    textAlign: "center", 
+    marginTop: 20, 
+    color: theme.colors.text,
+    fontSize: 18,
+    fontWeight: '800'
+  },
+
+  noResultSub: {
+    textAlign: "center", 
+    marginTop: 8, 
+    color: theme.colors.muted,
+    fontSize: 15,
+    fontWeight: '600'
+  }
 });

@@ -15,6 +15,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { theme } from "../styles/theme";
+import { SideMenu } from "../components/SideMenu";
 
 /**
  * High-fidelity Ride History / Activity Screen
@@ -243,6 +244,7 @@ function RideCard({ item, index }) {
 export function ActivityScreen() {
   const [rides, setRides] = useState(SAMPLE_RIDES);
   const [filter, setFilter] = useState({ date: "All", price: "All", status: "All", vehicle: "All" });
+  const [menuVisible, setMenuVisible] = useState(false);
 
   // simple filter handler (client side)
   function applyFilter(key, value) {
@@ -252,6 +254,18 @@ export function ActivityScreen() {
 
   return (
     <SafeAreaView style={styles.safe}>
+      <View style={styles.topBar}>
+        <TouchableOpacity
+          style={styles.menuButton}
+          onPress={() => setMenuVisible(true)}
+          activeOpacity={0.8}
+        >
+          <Ionicons name="menu" size={24} color={theme.colors.text} />
+        </TouchableOpacity>
+        <Text style={styles.topBarTitle}>Activity</Text>
+        <View style={{ width: 40 }} />
+      </View>
+
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Your ride history</Text>
         <Text style={styles.headerSub}>Explore past trips, rate drivers, and add tips.</Text>
@@ -290,6 +304,9 @@ export function ActivityScreen() {
         renderItem={({ item, index }) => <RideCard item={item} index={index} />}
         ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
       />
+
+      {/* SIDE MENU */}
+      <SideMenu visible={menuVisible} onClose={() => setMenuVisible(false)} />
     </SafeAreaView>
   );
 }
@@ -297,6 +314,33 @@ export function ActivityScreen() {
 /* -------------------- STYLES -------------------- */
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: theme.colors.background },
+
+  topBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.border,
+    backgroundColor: '#fff'
+  },
+
+  menuButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: theme.colors.background,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+
+  topBarTitle: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: theme.colors.text,
+    letterSpacing: -0.3
+  },
 
   header: { paddingHorizontal: 16, paddingTop: 16 },
   headerTitle: { fontSize: 22, fontWeight: "900", color: theme.colors.text },

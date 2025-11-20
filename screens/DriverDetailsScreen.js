@@ -1,6 +1,7 @@
 import React from "react";
-import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView } from "react-native";
+import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView, SafeAreaView } from "react-native";
 import { useParams, useLocation, useNavigate } from "react-router-native";
+import { Ionicons } from "@expo/vector-icons";
 import { theme } from "../styles/theme";
 
 export function DriverDetailsScreen() {
@@ -51,61 +52,121 @@ export function DriverDetailsScreen() {
   }
 
   return (
-    <ScrollView style={styles.container}>
-      
-      {/* DRIVER IMAGE */}
-      <Image source={{ uri: driverImg }} style={styles.avatar} />
+    <SafeAreaView style={styles.safeArea}>
+      {/* HEADER */}
+      <View style={styles.header}>
+        <TouchableOpacity 
+          style={styles.backBtn} 
+          onPress={() => navigate(-1)}
+          activeOpacity={0.8}
+        >
+          <Ionicons name="arrow-back" size={24} color={theme.colors.text} />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Ride Details</Text>
+        <View style={{ width: 40 }} />
+      </View>
 
-      {/* DRIVER NAME */}
-      <Text style={styles.name}>{driverName}</Text>
-      <Text style={styles.rating}>⭐ {driverRating} / 5.0</Text>
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      
+      {/* DRIVER PROFILE CARD */}
+      <View style={styles.profileCard}>
+        <Image source={{ uri: driverImg }} style={styles.avatar} />
+        <Text style={styles.name}>{driverName}</Text>
+        <View style={styles.ratingContainer}>
+          <Ionicons name="star" size={16} color="#FFD700" />
+          <Text style={styles.rating}>{driverRating}</Text>
+          <Text style={styles.ratingLabel}> • Excellent driver</Text>
+        </View>
+      </View>
 
       {/* CAR DETAILS CARD */}
       <View style={styles.card}>
-        <Text style={styles.cardTitle}>Vehicle Details</Text>
+        <Text style={styles.cardTitle}>
+          <Ionicons name="car-sport" size={20} color={theme.colors.primary} /> Vehicle
+        </Text>
 
         {carImage ? (
           <Image source={{ uri: carImage }} style={styles.carImage} />
         ) : null}
 
-        <Text style={styles.detailText}>{carModel} ({carColor})</Text>
-        <Text style={styles.detailText}>Ride Type: {rideName}</Text>
-        <Text style={styles.detailText}>ETA: {eta}</Text>
+        <View style={styles.infoRow}>
+          <Text style={styles.label}>Model</Text>
+          <Text style={styles.value}>{carModel}</Text>
+        </View>
+
+        <View style={styles.infoRow}>
+          <Text style={styles.label}>Color</Text>
+          <Text style={styles.value}>{carColor}</Text>
+        </View>
+
+        <View style={styles.infoRow}>
+          <Text style={styles.label}>Category</Text>
+          <Text style={styles.value}>{rideName}</Text>
+        </View>
+
+        <View style={styles.infoRow}>
+          <Text style={styles.label}>Arrives in</Text>
+          <Text style={[styles.value, { color: theme.colors.primary }]}>{eta}</Text>
+        </View>
       </View>
 
       {/* TRIP DETAILS */}
       <View style={styles.card}>
-        <Text style={styles.cardTitle}>Trip Information</Text>
-
-        <Text style={styles.tripLine}>Pickup:</Text>
-        <Text style={styles.detailText}>{pickup}</Text>
-
-        <Text style={styles.tripLine}>Destination:</Text>
-        <Text style={styles.detailText}>{destination}</Text>
-
-        <Text style={styles.detailText}>Coordinates:</Text>
-        <Text style={styles.coords}>
-          {pickupLat}, {pickupLon} → {destLat}, {destLon}
+        <Text style={styles.cardTitle}>
+          <Ionicons name="location" size={20} color={theme.colors.primary} /> Trip Route
         </Text>
+
+        <View style={styles.routeContainer}>
+          <View style={styles.routePoint}>
+            <View style={styles.pickupDot} />
+            <View>
+              <Text style={styles.routeLabel}>Pickup</Text>
+              <Text style={styles.routeAddress}>{pickup.split(",")[0]}</Text>
+              <Text style={styles.coordsText}>{pickupLat}, {pickupLon}</Text>
+            </View>
+          </View>
+
+          <View style={styles.routeLine} />
+
+          <View style={styles.routePoint}>
+            <View style={styles.dropDot} />
+            <View>
+              <Text style={styles.routeLabel}>Drop-off</Text>
+              <Text style={styles.routeAddress}>{destination.split(",")[0]}</Text>
+              <Text style={styles.coordsText}>{destLat}, {destLon}</Text>
+            </View>
+          </View>
+        </View>
       </View>
 
       {/* FARE DETAILS */}
       <View style={styles.card}>
-        <Text style={styles.cardTitle}>Fare Summary</Text>
+        <Text style={styles.cardTitle}>
+          <Ionicons name="receipt" size={20} color={theme.colors.primary} /> Fare Summary
+        </Text>
 
         <View style={styles.fareRow}>
-          <Text style={styles.fareLabel}>Estimated Fare</Text>
-          <Text style={styles.farePrice}>{price}</Text>
+          <Text style={styles.fareLabel}>Base Fare</Text>
+          <Text style={styles.fareValue}>{price}</Text>
+        </View>
+
+        <View style={styles.divider} />
+
+        <View style={styles.fareRow}>
+          <Text style={styles.fareTotalLabel}>Total Amount</Text>
+          <Text style={styles.fareTotalValue}>{price}</Text>
         </View>
       </View>
 
       {/* CONFIRM BUTTON */}
-      <TouchableOpacity style={styles.bookBtn} onPress={confirmRide}>
+      <TouchableOpacity style={styles.bookBtn} onPress={confirmRide} activeOpacity={0.9}>
         <Text style={styles.bookText}>Confirm Ride</Text>
+        <Ionicons name="arrow-forward" size={20} color="#fff" style={{ marginLeft: 8 }} />
       </TouchableOpacity>
 
       <View style={{ height: 40 }} />
     </ScrollView>
+    </SafeAreaView>
   );
 }
 
@@ -114,107 +175,240 @@ export function DriverDetailsScreen() {
    ====================================== */
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
-    padding: 18,
     backgroundColor: theme.colors.background
   },
 
-  avatar: {
-    width: 140,
-    height: 140,
-    borderRadius: 22,
-    alignSelf: "center",
-    marginTop: 12
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.border
   },
 
-  name: {
-    fontSize: 24,
-    fontWeight: "900",
-    textAlign: "center",
-    marginTop: 10,
+  backBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: theme.borderRadius.md,
+    backgroundColor: theme.colors.background,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '700',
     color: theme.colors.text
   },
 
+  container: {
+    flex: 1,
+    padding: 20
+  },
+
+  profileCard: {
+    backgroundColor: '#fff',
+    padding: 24,
+    borderRadius: theme.borderRadius.xl,
+    alignItems: 'center',
+    marginBottom: 16,
+    ...theme.shadows.medium
+  },
+
+  avatar: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    marginBottom: 14,
+    borderWidth: 3,
+    borderColor: theme.colors.primaryLight
+  },
+
+  name: {
+    fontSize: 22,
+    fontWeight: "800",
+    color: theme.colors.text,
+    marginBottom: 8,
+    letterSpacing: -0.5
+  },
+
+  ratingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFF9E6',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: theme.borderRadius.full
+  },
+
   rating: {
-    textAlign: "center",
-    marginTop: 4,
     fontSize: 15,
     fontWeight: "700",
-    color: theme.colors.muted
+    color: theme.colors.text,
+    marginLeft: 4
+  },
+
+  ratingLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: theme.colors.textLight
   },
 
   card: {
     backgroundColor: "#fff",
-    padding: 16,
-    borderRadius: 16,
-    elevation: 3,
-    marginTop: 20
+    padding: 18,
+    borderRadius: theme.borderRadius.lg,
+    marginBottom: 14,
+    ...theme.shadows.small
   },
 
   cardTitle: {
-    fontSize: 18,
-    fontWeight: "900",
-    marginBottom: 10,
+    fontSize: 16,
+    fontWeight: "800",
+    marginBottom: 16,
     color: theme.colors.text
   },
 
   carImage: {
     width: "100%",
-    height: 150,
-    borderRadius: 12,
+    height: 140,
+    borderRadius: theme.borderRadius.md,
     resizeMode: "contain",
-    marginBottom: 10
+    marginBottom: 16,
+    backgroundColor: theme.colors.background
   },
 
-  detailText: {
+  infoRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.border
+  },
+
+  label: {
     fontSize: 14,
-    color: theme.colors.muted,
-    marginTop: 4,
-    fontWeight: "600"
+    fontWeight: '600',
+    color: theme.colors.muted
   },
 
-  tripLine: {
-    marginTop: 8,
-    fontSize: 15,
-    fontWeight: "800",
+  value: {
+    fontSize: 14,
+    fontWeight: '700',
     color: theme.colors.text
   },
 
-  coords: {
-    marginTop: 4,
+  routeContainer: {
+    paddingVertical: 8
+  },
+
+  routePoint: {
+    flexDirection: 'row',
+    alignItems: 'flex-start'
+  },
+
+  pickupDot: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: theme.colors.primary,
+    marginRight: 14,
+    marginTop: 4
+  },
+
+  dropDot: {
+    width: 12,
+    height: 12,
+    borderRadius: 2,
+    backgroundColor: theme.colors.danger,
+    marginRight: 14,
+    marginTop: 4
+  },
+
+  routeLine: {
+    width: 2,
+    height: 32,
+    backgroundColor: theme.colors.border,
+    marginLeft: 5,
+    marginVertical: 8
+  },
+
+  routeLabel: {
+    fontSize: 12,
+    fontWeight: '700',
     color: theme.colors.muted,
-    fontSize: 12
+    marginBottom: 4,
+    textTransform: 'uppercase'
+  },
+
+  routeAddress: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: theme.colors.text,
+    marginBottom: 4
+  },
+
+  coordsText: {
+    fontSize: 11,
+    color: theme.colors.muted,
+    fontWeight: '500'
   },
 
   fareRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 10
+    paddingVertical: 10
   },
 
   fareLabel: {
-    fontWeight: "800",
-    fontSize: 16
+    fontWeight: "600",
+    fontSize: 14,
+    color: theme.colors.textLight
   },
 
-  farePrice: {
-    fontWeight: "900",
+  fareValue: {
+    fontWeight: "700",
+    fontSize: 14,
+    color: theme.colors.text
+  },
+
+  divider: {
+    height: 1,
+    backgroundColor: theme.colors.border,
+    marginVertical: 8
+  },
+
+  fareTotalLabel: {
+    fontWeight: "800",
+    fontSize: 16,
+    color: theme.colors.text
+  },
+
+  fareTotalValue: {
+    fontWeight: "800",
     fontSize: 18,
     color: theme.colors.primary
   },
 
   bookBtn: {
     backgroundColor: theme.colors.primary,
-    paddingVertical: 14,
-    marginTop: 22,
-    borderRadius: 14,
-    alignItems: "center"
+    paddingVertical: 16,
+    marginTop: 8,
+    borderRadius: theme.borderRadius.lg,
+    flexDirection: 'row',
+    alignItems: "center",
+    justifyContent: 'center',
+    ...theme.shadows.medium
   },
 
   bookText: {
     color: "#fff",
-    fontSize: 18,
-    fontWeight: "900"
+    fontSize: 17,
+    fontWeight: "800"
   }
 });
